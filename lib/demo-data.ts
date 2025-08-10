@@ -719,20 +719,42 @@ export class DemoDataStore {
     return null
   }
 
-  // Analytics and statistics
-  getSystemStats() {
+  // Analytics and statistics - THIS IS THE MISSING METHOD
+  getStats() {
+    const totalUsers = this.users.length
+    const activeUsers = this.users.filter((u) => u.status === "active").length
+    const totalOrganizations = this.organizations.length
+    const activeOrganizations = this.organizations.filter((o) => o.status === "active").length
+    const totalSurveys = this.surveys.length
+    const activeSurveys = this.surveys.filter((s) => s.status === "active").length
+    const totalResponses = this.surveys.reduce((sum, s) => sum + s.responses_count, 0)
+    const openRisks = this.riskLogs.filter((r) => r.status === "open").length
+    const criticalRisks = this.riskLogs.filter((r) => r.severity === "critical").length
+    const documentsProcessed = this.documents.filter((d) => d.status === "completed").length
+    const pendingApprovals =
+      this.organizations.filter((o) => o.status === "pending").length +
+      this.users.filter((u) => u.status === "inactive").length
+    const riskAlerts = this.riskLogs.filter((r) => r.status === "open" || r.status === "investigating").length
+
     return {
-      totalUsers: this.users.length,
-      activeUsers: this.users.filter((u) => u.status === "active").length,
-      totalOrganizations: this.organizations.length,
-      activeOrganizations: this.organizations.filter((o) => o.status === "active").length,
-      totalSurveys: this.surveys.length,
-      activeSurveys: this.surveys.filter((s) => s.status === "active").length,
-      totalResponses: this.surveys.reduce((sum, s) => sum + s.responses_count, 0),
-      openRisks: this.riskLogs.filter((r) => r.status === "open").length,
-      criticalRisks: this.riskLogs.filter((r) => r.severity === "critical").length,
-      documentsProcessed: this.documents.filter((d) => d.status === "completed").length,
+      totalUsers,
+      activeUsers,
+      totalOrganizations,
+      activeOrganizations,
+      totalSurveys,
+      activeSurveys,
+      totalResponses,
+      openRisks,
+      criticalRisks,
+      documentsProcessed,
+      pendingApprovals,
+      riskAlerts,
+      systemHealth: "good" as const,
     }
+  }
+
+  getSystemStats() {
+    return this.getStats()
   }
 
   getSurveyStats(surveyId: string) {
@@ -778,4 +800,4 @@ export class DemoDataStore {
 // Export singleton instance
 export const demoDataStore = new DemoDataStore()
 
-// Export individual data arrays for direct access;
+// Export individual data arrays for direct access
