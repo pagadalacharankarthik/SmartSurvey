@@ -1,26 +1,29 @@
+// Demo data interfaces
 export interface DemoUser {
   id: string
   email: string
   password: string
-  name: string
-  role: "super_admin" | "admin" | "conductor"
-  organization_id: string
   phone?: string
-  status: "active" | "pending" | "suspended"
+  name: string
+  role: "super_admin" | "health_admin" | "education_admin" | "water_admin" | "field_agent" | "survey_specialist"
+  organization_id: string
   created_at: string
   last_login?: string
+  status: "active" | "inactive" | "suspended"
+  avatar?: string
 }
 
 export interface DemoOrganization {
   id: string
   name: string
-  type: "government" | "ngo" | "private" | "academic"
-  status: "active" | "pending" | "suspended"
-  contact_email: string
-  phone?: string
-  address?: string
+  type: "government" | "ngo" | "private" | "international"
+  status: "active" | "inactive" | "pending"
   created_at: string
-  user_count: number
+  contact_email: string
+  contact_phone: string
+  address: string
+  description: string
+  logo?: string
 }
 
 export interface DemoSurvey {
@@ -30,10 +33,10 @@ export interface DemoSurvey {
   organization_id: string
   created_by: string
   status: "draft" | "active" | "completed" | "archived"
-  questions: DemoQuestion[]
-  responses_count: number
   created_at: string
   updated_at: string
+  questions: DemoQuestion[]
+  responses_count: number
   target_responses: number
   category: "health" | "education" | "water" | "infrastructure" | "social"
 }
@@ -42,7 +45,7 @@ export interface DemoQuestion {
   id: string
   survey_id: string
   question_text: string
-  question_type: "text" | "multiple_choice" | "rating" | "boolean" | "number"
+  question_type: "multiple_choice" | "text" | "rating" | "yes_no" | "checkbox"
   options?: string[]
   required: boolean
   order: number
@@ -52,8 +55,8 @@ export interface DemoResponse {
   id: string
   survey_id: string
   question_id: string
-  answer: string
-  respondent_id: string
+  answer: string | string[]
+  respondent_id?: string
   created_at: string
   location?: {
     latitude: number
@@ -64,359 +67,368 @@ export interface DemoResponse {
 
 export interface DemoRiskLog {
   id: string
-  type: "fraud_detection" | "data_quality" | "security" | "compliance"
+  survey_id: string
+  risk_type: "data_quality" | "bias_detection" | "anomaly" | "security" | "compliance"
   severity: "low" | "medium" | "high" | "critical"
-  message: string
-  details: any
-  survey_id?: string
-  user_id?: string
-  created_at: string
-  resolved: boolean
-  resolved_at?: string
-  resolved_by?: string
+  description: string
+  detected_at: string
+  status: "open" | "investigating" | "resolved" | "false_positive"
+  assigned_to?: string
+  resolution_notes?: string
 }
 
 export interface DemoDocument {
   id: string
   name: string
-  type: string
+  type: "pdf" | "doc" | "xlsx" | "image"
   size: number
   uploaded_by: string
+  uploaded_at: string
   organization_id: string
-  survey_id?: string
-  status: "processing" | "completed" | "failed"
   ai_analysis?: {
     summary: string
-    key_points: string[]
-    sentiment: "positive" | "neutral" | "negative"
-    confidence: number
+    key_insights: string[]
+    confidence_score: number
+    processed_at: string
   }
-  created_at: string
+  tags: string[]
+  status: "processing" | "completed" | "failed"
 }
 
-// Demo Organizations
+export interface DemoAnalytics {
+  survey_id: string
+  total_responses: number
+  completion_rate: number
+  average_time: number
+  response_trend: Array<{
+    date: string
+    count: number
+  }>
+  demographic_breakdown: {
+    age_groups: Record<string, number>
+    locations: Record<string, number>
+    devices: Record<string, number>
+  }
+}
+
+// Demo data arrays
+export const demoUsers: DemoUser[] = [
+  {
+    id: "1",
+    email: "admin@demo.com",
+    password: "admin123",
+    phone: "+1234567890",
+    name: "System Administrator",
+    role: "super_admin",
+    organization_id: "1",
+    created_at: "2024-01-01T00:00:00Z",
+    last_login: "2024-01-15T10:30:00Z",
+    status: "active",
+    avatar: "/placeholder-user.jpg",
+  },
+  {
+    id: "2",
+    email: "health.admin@demo.com",
+    password: "health123",
+    phone: "+1234567891",
+    name: "Dr. Sarah Johnson",
+    role: "health_admin",
+    organization_id: "1",
+    created_at: "2024-01-02T00:00:00Z",
+    last_login: "2024-01-15T09:15:00Z",
+    status: "active",
+    avatar: "/placeholder-user.jpg",
+  },
+  {
+    id: "3",
+    email: "edu.admin@demo.com",
+    password: "edu123",
+    phone: "+1234567892",
+    name: "Prof. Michael Chen",
+    role: "education_admin",
+    organization_id: "2",
+    created_at: "2024-01-03T00:00:00Z",
+    last_login: "2024-01-14T16:45:00Z",
+    status: "active",
+    avatar: "/placeholder-user.jpg",
+  },
+  {
+    id: "4",
+    email: "water.admin@demo.com",
+    password: "water123",
+    phone: "+1234567893",
+    name: "Engineer Lisa Rodriguez",
+    role: "water_admin",
+    organization_id: "3",
+    created_at: "2024-01-04T00:00:00Z",
+    last_login: "2024-01-15T08:20:00Z",
+    status: "active",
+    avatar: "/placeholder-user.jpg",
+  },
+  {
+    id: "5",
+    email: "conductor1@demo.com",
+    password: "conductor123",
+    phone: "+1234567894",
+    name: "James Wilson",
+    role: "field_agent",
+    organization_id: "1",
+    created_at: "2024-01-05T00:00:00Z",
+    last_login: "2024-01-15T07:30:00Z",
+    status: "active",
+    avatar: "/placeholder-user.jpg",
+  },
+  {
+    id: "6",
+    email: "conductor2@demo.com",
+    password: "conductor123",
+    phone: "+1234567895",
+    name: "Maria Garcia",
+    role: "survey_specialist",
+    organization_id: "2",
+    created_at: "2024-01-06T00:00:00Z",
+    last_login: "2024-01-14T18:00:00Z",
+    status: "active",
+    avatar: "/placeholder-user.jpg",
+  },
+  {
+    id: "7",
+    email: "field.agent@demo.com",
+    password: "field123",
+    phone: "+1234567896",
+    name: "David Thompson",
+    role: "field_agent",
+    organization_id: "3",
+    created_at: "2024-01-07T00:00:00Z",
+    last_login: "2024-01-15T06:45:00Z",
+    status: "active",
+    avatar: "/placeholder-user.jpg",
+  },
+  {
+    id: "8",
+    email: "specialist@demo.com",
+    password: "spec123",
+    phone: "+1234567897",
+    name: "Anna Kowalski",
+    role: "survey_specialist",
+    organization_id: "4",
+    created_at: "2024-01-08T00:00:00Z",
+    last_login: "2024-01-14T14:20:00Z",
+    status: "active",
+    avatar: "/placeholder-user.jpg",
+  },
+]
+
 export const demoOrganizations: DemoOrganization[] = [
   {
-    id: "org-1",
+    id: "1",
     name: "Ministry of Health",
     type: "government",
     status: "active",
+    created_at: "2024-01-01T00:00:00Z",
     contact_email: "contact@health.gov",
-    phone: "+1-555-0101",
+    contact_phone: "+1234567890",
     address: "123 Government Plaza, Capital City",
-    created_at: "2024-01-15T08:00:00Z",
-    user_count: 25,
+    description: "National health ministry responsible for public health policies and programs.",
+    logo: "/placeholder-logo.png",
   },
   {
-    id: "org-2",
+    id: "2",
     name: "Education Development Foundation",
     type: "ngo",
     status: "active",
+    created_at: "2024-01-02T00:00:00Z",
     contact_email: "info@edf.org",
-    phone: "+1-555-0102",
-    address: "456 NGO Street, Metro City",
-    created_at: "2024-01-20T09:00:00Z",
-    user_count: 18,
+    contact_phone: "+1234567891",
+    address: "456 Education Ave, Learning District",
+    description: "Non-profit organization focused on improving educational outcomes.",
+    logo: "/placeholder-logo.png",
   },
   {
-    id: "org-3",
+    id: "3",
     name: "Water Resources Department",
     type: "government",
     status: "active",
-    contact_email: "water@gov.dept",
-    phone: "+1-555-0103",
-    address: "789 Water Works Ave, River City",
-    created_at: "2024-02-01T10:00:00Z",
-    user_count: 12,
+    created_at: "2024-01-03T00:00:00Z",
+    contact_email: "water@resources.gov",
+    contact_phone: "+1234567892",
+    address: "789 Water St, Riverside",
+    description: "Government department managing water resources and infrastructure.",
+    logo: "/placeholder-logo.png",
   },
   {
-    id: "org-4",
-    name: "Community Research Institute",
-    type: "academic",
-    status: "pending",
-    contact_email: "research@cri.edu",
-    phone: "+1-555-0104",
-    address: "321 University Blvd, College Town",
-    created_at: "2024-02-15T11:00:00Z",
-    user_count: 8,
-  },
-  {
-    id: "org-5",
-    name: "DataTech Solutions",
+    id: "4",
+    name: "Global Survey Solutions",
     type: "private",
     status: "active",
-    contact_email: "contact@datatech.com",
-    phone: "+1-555-0105",
-    address: "654 Tech Park, Innovation City",
-    created_at: "2024-02-20T12:00:00Z",
-    user_count: 15,
-  },
-]
-
-// Demo Users
-export const demoUsers: DemoUser[] = [
-  {
-    id: "user-1",
-    email: "admin@demo.com",
-    password: "admin123",
-    name: "System Administrator",
-    role: "super_admin",
-    organization_id: "org-1",
-    phone: "+1-555-1001",
-    status: "active",
-    created_at: "2024-01-01T00:00:00Z",
-    last_login: "2024-03-15T14:30:00Z",
+    created_at: "2024-01-04T00:00:00Z",
+    contact_email: "hello@globalsolutions.com",
+    contact_phone: "+1234567893",
+    address: "321 Business Park, Tech City",
+    description: "Private company specializing in survey technology and data analytics.",
+    logo: "/placeholder-logo.png",
   },
   {
-    id: "user-2",
-    email: "health.admin@demo.com",
-    password: "health123",
-    name: "Dr. Sarah Johnson",
-    role: "admin",
-    organization_id: "org-1",
-    phone: "+1-555-1002",
-    status: "active",
-    created_at: "2024-01-15T08:00:00Z",
-    last_login: "2024-03-15T10:15:00Z",
-  },
-  {
-    id: "user-3",
-    email: "edu.admin@demo.com",
-    password: "edu123",
-    name: "Prof. Michael Chen",
-    role: "admin",
-    organization_id: "org-2",
-    phone: "+1-555-1003",
-    status: "active",
-    created_at: "2024-01-20T09:00:00Z",
-    last_login: "2024-03-14T16:45:00Z",
-  },
-  {
-    id: "user-4",
-    email: "water.admin@demo.com",
-    password: "water123",
-    name: "Engineer Lisa Rodriguez",
-    role: "admin",
-    organization_id: "org-3",
-    phone: "+1-555-1004",
-    status: "active",
-    created_at: "2024-02-01T10:00:00Z",
-    last_login: "2024-03-15T09:20:00Z",
-  },
-  {
-    id: "user-5",
-    email: "conductor1@demo.com",
-    password: "conductor123",
-    name: "Field Agent John Smith",
-    role: "conductor",
-    organization_id: "org-1",
-    phone: "+1-555-1005",
-    status: "active",
-    created_at: "2024-02-10T11:00:00Z",
-    last_login: "2024-03-15T13:10:00Z",
-  },
-  {
-    id: "user-6",
-    email: "conductor2@demo.com",
-    password: "conductor123",
-    name: "Survey Specialist Emma Davis",
-    role: "conductor",
-    organization_id: "org-2",
-    phone: "+1-555-1006",
-    status: "active",
-    created_at: "2024-02-15T12:00:00Z",
-    last_login: "2024-03-15T11:30:00Z",
-  },
-  {
-    id: "user-7",
-    email: "pending.user@demo.com",
-    password: "pending123",
-    name: "New User Pending",
-    role: "conductor",
-    organization_id: "org-4",
-    phone: "+1-555-1007",
+    id: "5",
+    name: "International Development Agency",
+    type: "international",
     status: "pending",
-    created_at: "2024-03-01T13:00:00Z",
-  },
-  {
-    id: "user-8",
-    email: "suspended.user@demo.com",
-    password: "suspended123",
-    name: "Suspended User",
-    role: "conductor",
-    organization_id: "org-5",
-    phone: "+1-555-1008",
-    status: "suspended",
-    created_at: "2024-02-25T14:00:00Z",
-    last_login: "2024-03-10T15:00:00Z",
+    created_at: "2024-01-05T00:00:00Z",
+    contact_email: "contact@ida.org",
+    contact_phone: "+1234567894",
+    address: "555 International Blvd, Global Center",
+    description: "International organization supporting development projects worldwide.",
+    logo: "/placeholder-logo.png",
   },
 ]
 
-// Demo Surveys
 export const demoSurveys: DemoSurvey[] = [
   {
-    id: "survey-1",
+    id: "1",
     title: "Community Health Assessment 2024",
-    description: "Comprehensive health survey to assess community health needs and access to healthcare services.",
-    organization_id: "org-1",
-    created_by: "user-2",
+    description: "Comprehensive survey to assess community health needs and access to healthcare services.",
+    organization_id: "1",
+    created_by: "2",
     status: "active",
+    created_at: "2024-01-10T00:00:00Z",
+    updated_at: "2024-01-15T00:00:00Z",
     responses_count: 1247,
     target_responses: 2000,
     category: "health",
-    created_at: "2024-02-01T10:00:00Z",
-    updated_at: "2024-03-15T14:30:00Z",
     questions: [
       {
-        id: "q1-1",
-        survey_id: "survey-1",
+        id: "1-1",
+        survey_id: "1",
         question_text: "How would you rate your overall health?",
         question_type: "rating",
-        options: ["1", "2", "3", "4", "5"],
         required: true,
         order: 1,
       },
       {
-        id: "q1-2",
-        survey_id: "survey-1",
-        question_text: "Do you have access to a healthcare facility within 10km?",
-        question_type: "boolean",
+        id: "1-2",
+        survey_id: "1",
+        question_text: "Do you have access to healthcare services in your area?",
+        question_type: "yes_no",
         required: true,
         order: 2,
       },
       {
-        id: "q1-3",
-        survey_id: "survey-1",
-        question_text: "What is your primary health concern?",
-        question_type: "multiple_choice",
-        options: [
-          "Chronic diseases",
-          "Mental health",
-          "Infectious diseases",
-          "Maternal health",
-          "Child health",
-          "Other",
-        ],
+        id: "1-3",
+        survey_id: "1",
+        question_text: "What are the main health challenges in your community?",
+        question_type: "checkbox",
+        options: ["Lack of doctors", "High costs", "Distance to facilities", "Long wait times", "Other"],
         required: false,
         order: 3,
       },
     ],
   },
   {
-    id: "survey-2",
-    title: "Digital Literacy Assessment",
-    description: "Survey to evaluate digital literacy levels and technology access in educational institutions.",
-    organization_id: "org-2",
-    created_by: "user-3",
+    id: "2",
+    title: "Educational Quality Survey",
+    description: "Survey to evaluate the quality of education and identify areas for improvement.",
+    organization_id: "2",
+    created_by: "3",
     status: "active",
-    responses_count: 892,
+    created_at: "2024-01-12T00:00:00Z",
+    updated_at: "2024-01-14T00:00:00Z",
+    responses_count: 856,
     target_responses: 1500,
     category: "education",
-    created_at: "2024-02-15T09:00:00Z",
-    updated_at: "2024-03-14T16:45:00Z",
     questions: [
       {
-        id: "q2-1",
-        survey_id: "survey-2",
-        question_text: "How comfortable are you with using computers?",
+        id: "2-1",
+        survey_id: "2",
+        question_text: "How satisfied are you with the quality of education?",
         question_type: "rating",
-        options: ["1", "2", "3", "4", "5"],
         required: true,
         order: 1,
       },
       {
-        id: "q2-2",
-        survey_id: "survey-2",
-        question_text: "Do you have internet access at home?",
-        question_type: "boolean",
+        id: "2-2",
+        survey_id: "2",
+        question_text: "What is the biggest challenge in education?",
+        question_type: "multiple_choice",
+        options: ["Teacher shortage", "Lack of resources", "Infrastructure", "Curriculum", "Other"],
         required: true,
         order: 2,
       },
     ],
   },
   {
-    id: "survey-3",
-    title: "Water Quality Monitoring",
-    description: "Assessment of water quality and access in rural communities.",
-    organization_id: "org-3",
-    created_by: "user-4",
-    status: "active",
-    responses_count: 634,
-    target_responses: 1000,
-    category: "water",
-    created_at: "2024-03-01T11:00:00Z",
-    updated_at: "2024-03-15T09:20:00Z",
-    questions: [
-      {
-        id: "q3-1",
-        survey_id: "survey-3",
-        question_text: "What is your primary source of drinking water?",
-        question_type: "multiple_choice",
-        options: ["Tap water", "Well water", "Bottled water", "River/stream", "Rainwater", "Other"],
-        required: true,
-        order: 1,
-      },
-      {
-        id: "q3-2",
-        survey_id: "survey-3",
-        question_text: "How would you rate the quality of your drinking water?",
-        question_type: "rating",
-        options: ["1", "2", "3", "4", "5"],
-        required: true,
-        order: 2,
-      },
-    ],
-  },
-  {
-    id: "survey-4",
-    title: "Infrastructure Development Needs",
-    description: "Community survey to identify priority infrastructure development projects.",
-    organization_id: "org-4",
-    created_by: "user-7",
-    status: "draft",
-    responses_count: 0,
-    target_responses: 800,
-    category: "infrastructure",
-    created_at: "2024-03-10T12:00:00Z",
-    updated_at: "2024-03-10T12:00:00Z",
-    questions: [
-      {
-        id: "q4-1",
-        survey_id: "survey-4",
-        question_text: "What infrastructure improvement is most needed in your area?",
-        question_type: "multiple_choice",
-        options: [
-          "Roads",
-          "Electricity",
-          "Water supply",
-          "Internet connectivity",
-          "Public transport",
-          "Healthcare facilities",
-        ],
-        required: true,
-        order: 1,
-      },
-    ],
-  },
-  {
-    id: "survey-5",
-    title: "Social Impact Assessment",
-    description: "Evaluation of social programs and community development initiatives.",
-    organization_id: "org-5",
-    created_by: "user-8",
+    id: "3",
+    title: "Water Access and Quality Study",
+    description: "Assessment of water access, quality, and infrastructure needs in rural communities.",
+    organization_id: "3",
+    created_by: "4",
     status: "completed",
-    responses_count: 1856,
-    target_responses: 1500,
-    category: "social",
-    created_at: "2024-01-15T08:00:00Z",
-    updated_at: "2024-02-28T17:00:00Z",
+    created_at: "2024-01-05T00:00:00Z",
+    updated_at: "2024-01-13T00:00:00Z",
+    responses_count: 2341,
+    target_responses: 2000,
+    category: "water",
     questions: [
       {
-        id: "q5-1",
-        survey_id: "survey-5",
-        question_text: "How satisfied are you with community services?",
+        id: "3-1",
+        survey_id: "3",
+        question_text: "Do you have access to clean drinking water?",
+        question_type: "yes_no",
+        required: true,
+        order: 1,
+      },
+      {
+        id: "3-2",
+        survey_id: "3",
+        question_text: "How far is your nearest water source?",
+        question_type: "multiple_choice",
+        options: ["Less than 100m", "100m-500m", "500m-1km", "More than 1km"],
+        required: true,
+        order: 2,
+      },
+    ],
+  },
+  {
+    id: "4",
+    title: "Infrastructure Development Priorities",
+    description: "Survey to identify community priorities for infrastructure development projects.",
+    organization_id: "4",
+    created_by: "8",
+    status: "draft",
+    created_at: "2024-01-14T00:00:00Z",
+    updated_at: "2024-01-15T00:00:00Z",
+    responses_count: 0,
+    target_responses: 1000,
+    category: "infrastructure",
+    questions: [
+      {
+        id: "4-1",
+        survey_id: "4",
+        question_text: "What infrastructure improvement is most needed?",
+        question_type: "multiple_choice",
+        options: ["Roads", "Electricity", "Internet", "Public transport", "Healthcare facilities"],
+        required: true,
+        order: 1,
+      },
+    ],
+  },
+  {
+    id: "5",
+    title: "Social Services Evaluation",
+    description: "Comprehensive evaluation of social services accessibility and effectiveness.",
+    organization_id: "5",
+    created_by: "1",
+    status: "active",
+    created_at: "2024-01-08T00:00:00Z",
+    updated_at: "2024-01-12T00:00:00Z",
+    responses_count: 432,
+    target_responses: 800,
+    category: "social",
+    questions: [
+      {
+        id: "5-1",
+        survey_id: "5",
+        question_text: "How would you rate the social services in your area?",
         question_type: "rating",
-        options: ["1", "2", "3", "4", "5"],
         required: true,
         order: 1,
       },
@@ -424,160 +436,346 @@ export const demoSurveys: DemoSurvey[] = [
   },
 ]
 
-// Demo Risk Logs
 export const demoRiskLogs: DemoRiskLog[] = [
   {
-    id: "risk-1",
-    type: "fraud_detection",
-    severity: "high",
-    message: "Suspicious response pattern detected",
-    details: {
-      pattern: "Multiple identical responses from different locations",
-      affected_responses: 15,
-      confidence: 0.87,
-    },
-    survey_id: "survey-1",
-    user_id: "user-5",
-    created_at: "2024-03-15T10:30:00Z",
-    resolved: false,
-  },
-  {
-    id: "risk-2",
-    type: "data_quality",
+    id: "1",
+    survey_id: "1",
+    risk_type: "data_quality",
     severity: "medium",
-    message: "Incomplete response rate detected",
-    details: {
-      completion_rate: 0.65,
-      expected_rate: 0.85,
-      affected_questions: ["q2-3", "q2-4"],
-    },
-    survey_id: "survey-2",
-    created_at: "2024-03-14T15:20:00Z",
-    resolved: true,
-    resolved_at: "2024-03-15T09:00:00Z",
-    resolved_by: "user-3",
+    description: "Detected inconsistent response patterns in health assessment survey",
+    detected_at: "2024-01-15T10:30:00Z",
+    status: "investigating",
+    assigned_to: "2",
   },
   {
-    id: "risk-3",
-    type: "security",
-    severity: "critical",
-    message: "Unauthorized access attempt",
-    details: {
-      ip_address: "192.168.1.100",
-      attempted_actions: ["user_creation", "data_export"],
-      blocked: true,
-    },
-    user_id: "user-8",
-    created_at: "2024-03-13T22:15:00Z",
-    resolved: true,
-    resolved_at: "2024-03-14T08:00:00Z",
-    resolved_by: "user-1",
+    id: "2",
+    survey_id: "2",
+    risk_type: "bias_detection",
+    severity: "high",
+    description: "Potential sampling bias detected in education survey responses",
+    detected_at: "2024-01-14T15:45:00Z",
+    status: "open",
+    assigned_to: "3",
   },
   {
-    id: "risk-4",
-    type: "compliance",
+    id: "3",
+    survey_id: "3",
+    risk_type: "anomaly",
     severity: "low",
-    message: "Data retention policy reminder",
-    details: {
-      surveys_affected: ["survey-5"],
-      retention_deadline: "2024-04-15",
-      action_required: "Archive or delete",
-    },
-    created_at: "2024-03-12T09:00:00Z",
-    resolved: false,
+    description: "Unusual response spike detected in water access survey",
+    detected_at: "2024-01-13T09:20:00Z",
+    status: "resolved",
+    assigned_to: "4",
+    resolution_notes: "Spike was due to community outreach event, no action needed",
+  },
+  {
+    id: "4",
+    survey_id: "1",
+    risk_type: "security",
+    severity: "critical",
+    description: "Potential data breach attempt detected",
+    detected_at: "2024-01-15T14:00:00Z",
+    status: "investigating",
+    assigned_to: "1",
+  },
+  {
+    id: "5",
+    survey_id: "5",
+    risk_type: "compliance",
+    severity: "medium",
+    description: "Survey may not meet international data protection standards",
+    detected_at: "2024-01-12T11:30:00Z",
+    status: "open",
+    assigned_to: "1",
   },
 ]
 
-// Demo Documents
 export const demoDocuments: DemoDocument[] = [
   {
-    id: "doc-1",
-    name: "Health Survey Guidelines.pdf",
-    type: "application/pdf",
+    id: "1",
+    name: "Health Survey Report 2023.pdf",
+    type: "pdf",
     size: 2048576,
-    uploaded_by: "user-2",
-    organization_id: "org-1",
-    survey_id: "survey-1",
-    status: "completed",
+    uploaded_by: "2",
+    uploaded_at: "2024-01-10T00:00:00Z",
+    organization_id: "1",
     ai_analysis: {
-      summary: "Comprehensive guidelines for conducting health surveys in rural communities.",
-      key_points: [
-        "Emphasis on cultural sensitivity",
-        "Standardized data collection protocols",
-        "Quality assurance measures",
+      summary:
+        "Comprehensive health survey report showing improved access to healthcare services but persistent challenges in rural areas.",
+      key_insights: [
+        "Healthcare access improved by 15% compared to 2022",
+        "Rural areas still face significant challenges",
+        "Mental health services need expansion",
       ],
-      sentiment: "positive",
-      confidence: 0.92,
+      confidence_score: 0.92,
+      processed_at: "2024-01-10T01:30:00Z",
     },
-    created_at: "2024-02-01T10:00:00Z",
+    tags: ["health", "annual-report", "2023"],
+    status: "completed",
   },
   {
-    id: "doc-2",
-    name: "Education Assessment Report.docx",
-    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    size: 1536000,
-    uploaded_by: "user-3",
-    organization_id: "org-2",
-    survey_id: "survey-2",
-    status: "completed",
+    id: "2",
+    name: "Education Statistics.xlsx",
+    type: "xlsx",
+    size: 1024000,
+    uploaded_by: "3",
+    uploaded_at: "2024-01-12T00:00:00Z",
+    organization_id: "2",
     ai_analysis: {
-      summary: "Analysis of digital literacy gaps in educational institutions.",
-      key_points: [
-        "Significant urban-rural divide",
-        "Need for teacher training programs",
-        "Infrastructure limitations",
+      summary: "Educational statistics showing enrollment trends and performance metrics across different regions.",
+      key_insights: [
+        "Primary school enrollment increased by 8%",
+        "Gender gap in education continues to narrow",
+        "Technology integration in classrooms needs improvement",
       ],
-      sentiment: "neutral",
-      confidence: 0.88,
+      confidence_score: 0.88,
+      processed_at: "2024-01-12T02:15:00Z",
     },
-    created_at: "2024-02-15T09:30:00Z",
+    tags: ["education", "statistics", "enrollment"],
+    status: "completed",
   },
   {
-    id: "doc-3",
-    name: "Water Quality Standards.xlsx",
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    id: "3",
+    name: "Water Infrastructure Plan.doc",
+    type: "doc",
     size: 512000,
-    uploaded_by: "user-4",
-    organization_id: "org-3",
+    uploaded_by: "4",
+    uploaded_at: "2024-01-14T00:00:00Z",
+    organization_id: "3",
+    ai_analysis: {
+      summary: "Strategic plan for water infrastructure development focusing on rural communities and sustainability.",
+      key_insights: [
+        "Investment needed in rural water systems",
+        "Sustainability measures are crucial",
+        "Community involvement is key to success",
+      ],
+      confidence_score: 0.85,
+      processed_at: "2024-01-14T01:45:00Z",
+    },
+    tags: ["water", "infrastructure", "planning"],
+    status: "completed",
+  },
+  {
+    id: "4",
+    name: "Survey Methodology Guide.pdf",
+    type: "pdf",
+    size: 1536000,
+    uploaded_by: "8",
+    uploaded_at: "2024-01-15T00:00:00Z",
+    organization_id: "4",
+    tags: ["methodology", "guide", "best-practices"],
     status: "processing",
-    created_at: "2024-03-15T14:00:00Z",
+  },
+  {
+    id: "5",
+    name: "Community Feedback Images.zip",
+    type: "image",
+    size: 5120000,
+    uploaded_by: "5",
+    uploaded_at: "2024-01-13T00:00:00Z",
+    organization_id: "1",
+    ai_analysis: {
+      summary: "Collection of community feedback images showing various infrastructure and service conditions.",
+      key_insights: [
+        "Visual evidence of infrastructure needs",
+        "Community engagement is high",
+        "Documentation quality varies",
+      ],
+      confidence_score: 0.76,
+      processed_at: "2024-01-13T03:20:00Z",
+    },
+    tags: ["community", "feedback", "images"],
+    status: "completed",
   },
 ]
 
-// Analytics Data
-export const demoAnalytics = {
-  totalSurveys: demoSurveys.length,
-  activeSurveys: demoSurveys.filter((s) => s.status === "active").length,
-  totalResponses: demoSurveys.reduce((sum, s) => sum + s.responses_count, 0),
-  totalUsers: demoUsers.length,
-  activeUsers: demoUsers.filter((u) => u.status === "active").length,
-  totalOrganizations: demoOrganizations.length,
-  activeOrganizations: demoOrganizations.filter((o) => o.status === "active").length,
-  riskAlerts: demoRiskLogs.filter((r) => !r.resolved).length,
-  criticalRisks: demoRiskLogs.filter((r) => r.severity === "critical" && !r.resolved).length,
-  documentsProcessed: demoDocuments.filter((d) => d.status === "completed").length,
-  responsesByCategory: {
-    health: 1247,
-    education: 892,
-    water: 634,
-    infrastructure: 0,
-    social: 1856,
-  },
-  responsesTrend: [
-    { date: "2024-03-01", responses: 3245 },
-    { date: "2024-03-02", responses: 3312 },
-    { date: "2024-03-03", responses: 3456 },
-    { date: "2024-03-04", responses: 3523 },
-    { date: "2024-03-05", responses: 3687 },
-    { date: "2024-03-06", responses: 3789 },
-    { date: "2024-03-07", responses: 3892 },
-    { date: "2024-03-08", responses: 4012 },
-    { date: "2024-03-09", responses: 4156 },
-    { date: "2024-03-10", responses: 4234 },
-    { date: "2024-03-11", responses: 4367 },
-    { date: "2024-03-12", responses: 4445 },
-    { date: "2024-03-13", responses: 4523 },
-    { date: "2024-03-14", responses: 4612 },
-    { date: "2024-03-15", responses: 4629 },
-  ],
+// Data store class
+export class DemoDataStore {
+  private users: DemoUser[] = [...demoUsers]
+  private organizations: DemoOrganization[] = [...demoOrganizations]
+  private surveys: DemoSurvey[] = [...demoSurveys]
+  private riskLogs: DemoRiskLog[] = [...demoRiskLogs]
+  private documents: DemoDocument[] = [...demoDocuments]
+
+  // User methods
+  getUsers(): DemoUser[] {
+    return this.users
+  }
+
+  getUserById(id: string): DemoUser | undefined {
+    return this.users.find((user) => user.id === id)
+  }
+
+  getUserByEmail(email: string): DemoUser | undefined {
+    return this.users.find((user) => user.email === email)
+  }
+
+  updateUser(id: string, updates: Partial<DemoUser>): DemoUser | null {
+    const userIndex = this.users.findIndex((user) => user.id === id)
+    if (userIndex !== -1) {
+      this.users[userIndex] = { ...this.users[userIndex], ...updates }
+      return this.users[userIndex]
+    }
+    return null
+  }
+
+  getUsersByOrganization(organizationId: string): DemoUser[] {
+    return this.users.filter((user) => user.organization_id === organizationId)
+  }
+
+  // Organization methods
+  getOrganizations(): DemoOrganization[] {
+    return this.organizations
+  }
+
+  getOrganizationById(id: string): DemoOrganization | undefined {
+    return this.organizations.find((org) => org.id === id)
+  }
+
+  updateOrganization(id: string, updates: Partial<DemoOrganization>): DemoOrganization | null {
+    const orgIndex = this.organizations.findIndex((org) => org.id === id)
+    if (orgIndex !== -1) {
+      this.organizations[orgIndex] = { ...this.organizations[orgIndex], ...updates }
+      return this.organizations[orgIndex]
+    }
+    return null
+  }
+
+  // Survey methods
+  getSurveys(): DemoSurvey[] {
+    return this.surveys
+  }
+
+  getSurveyById(id: string): DemoSurvey | undefined {
+    return this.surveys.find((survey) => survey.id === id)
+  }
+
+  getSurveysByOrganization(organizationId: string): DemoSurvey[] {
+    return this.surveys.filter((survey) => survey.organization_id === organizationId)
+  }
+
+  getSurveysByStatus(status: DemoSurvey["status"]): DemoSurvey[] {
+    return this.surveys.filter((survey) => survey.status === status)
+  }
+
+  updateSurvey(id: string, updates: Partial<DemoSurvey>): DemoSurvey | null {
+    const surveyIndex = this.surveys.findIndex((survey) => survey.id === id)
+    if (surveyIndex !== -1) {
+      this.surveys[surveyIndex] = { ...this.surveys[surveyIndex], ...updates }
+      return this.surveys[surveyIndex]
+    }
+    return null
+  }
+
+  // Risk log methods
+  getRiskLogs(): DemoRiskLog[] {
+    return this.riskLogs
+  }
+
+  getRiskLogsBySurvey(surveyId: string): DemoRiskLog[] {
+    return this.riskLogs.filter((log) => log.survey_id === surveyId)
+  }
+
+  getRiskLogsBySeverity(severity: DemoRiskLog["severity"]): DemoRiskLog[] {
+    return this.riskLogs.filter((log) => log.severity === severity)
+  }
+
+  getRiskLogsByStatus(status: DemoRiskLog["status"]): DemoRiskLog[] {
+    return this.riskLogs.filter((log) => log.status === status)
+  }
+
+  updateRiskLog(id: string, updates: Partial<DemoRiskLog>): DemoRiskLog | null {
+    const logIndex = this.riskLogs.findIndex((log) => log.id === id)
+    if (logIndex !== -1) {
+      this.riskLogs[logIndex] = { ...this.riskLogs[logIndex], ...updates }
+      return this.riskLogs[logIndex]
+    }
+    return null
+  }
+
+  // Document methods
+  getDocuments(): DemoDocument[] {
+    return this.documents
+  }
+
+  getDocumentById(id: string): DemoDocument | undefined {
+    return this.documents.find((doc) => doc.id === id)
+  }
+
+  getDocumentsByOrganization(organizationId: string): DemoDocument[] {
+    return this.documents.filter((doc) => doc.organization_id === organizationId)
+  }
+
+  getDocumentsByStatus(status: DemoDocument["status"]): DemoDocument[] {
+    return this.documents.filter((doc) => doc.status === status)
+  }
+
+  updateDocument(id: string, updates: Partial<DemoDocument>): DemoDocument | null {
+    const docIndex = this.documents.findIndex((doc) => doc.id === id)
+    if (docIndex !== -1) {
+      this.documents[docIndex] = { ...this.documents[docIndex], ...updates }
+      return this.documents[docIndex]
+    }
+    return null
+  }
+
+  // Analytics and statistics
+  getSystemStats() {
+    return {
+      totalUsers: this.users.length,
+      activeUsers: this.users.filter((u) => u.status === "active").length,
+      totalOrganizations: this.organizations.length,
+      activeOrganizations: this.organizations.filter((o) => o.status === "active").length,
+      totalSurveys: this.surveys.length,
+      activeSurveys: this.surveys.filter((s) => s.status === "active").length,
+      totalResponses: this.surveys.reduce((sum, s) => sum + s.responses_count, 0),
+      openRisks: this.riskLogs.filter((r) => r.status === "open").length,
+      criticalRisks: this.riskLogs.filter((r) => r.severity === "critical").length,
+      documentsProcessed: this.documents.filter((d) => d.status === "completed").length,
+    }
+  }
+
+  getSurveyStats(surveyId: string) {
+    const survey = this.getSurveyById(surveyId)
+    if (!survey) return null
+
+    const risks = this.getRiskLogsBySurvey(surveyId)
+    const organization = this.getOrganizationById(survey.organization_id)
+    const creator = this.getUserById(survey.created_by)
+
+    return {
+      survey,
+      organization,
+      creator,
+      risks,
+      completionRate: (survey.responses_count / survey.target_responses) * 100,
+      riskCount: risks.length,
+      openRisks: risks.filter((r) => r.status === "open").length,
+    }
+  }
+
+  getOrganizationStats(organizationId: string) {
+    const organization = this.getOrganizationById(organizationId)
+    if (!organization) return null
+
+    const users = this.getUsersByOrganization(organizationId)
+    const surveys = this.getSurveysByOrganization(organizationId)
+    const documents = this.getDocumentsByOrganization(organizationId)
+
+    return {
+      organization,
+      userCount: users.length,
+      activeUsers: users.filter((u) => u.status === "active").length,
+      surveyCount: surveys.length,
+      activeSurveys: surveys.filter((s) => s.status === "active").length,
+      totalResponses: surveys.reduce((sum, s) => sum + s.responses_count, 0),
+      documentCount: documents.length,
+      processedDocuments: documents.filter((d) => d.status === "completed").length,
+    }
+  }
 }
+
+// Export singleton instance
+export const demoDataStore = new DemoDataStore()
+
+// Export individual data arrays for direct access;
