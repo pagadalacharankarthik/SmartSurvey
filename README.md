@@ -1,30 +1,108 @@
-# Smart Survey Tool Requirements
+# TakeSurvey - Smart Survey Tool
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+TakeSurvey is an AI-Powered Smart Survey Tool designed for efficient data collection and analysis. It streamlines the survey process with advanced features like AI question extraction, real-time risk monitoring, and comprehensive role-based management.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/ledamob469-2121s-projects/v0-smart-survey-tool-requirements)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/PdEHIjLRJu0)
+## 🚀 Key Features
 
-## Overview
+### 🤖 AI Question Extraction
+- Automatically extract relevant survey questions from documents (PDF, DOCX, TXT).
+- Intelligent keyword analysis and smart question suggestions.
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+### 🛡️ Risk Monitoring
+- Real-time detection of duplicate cellular responses and suspicious patterns.
+- Location verification and device fingerprinting to ensure data integrity.
 
-## Deployment
+### 👥 Role-Based Access Control
+- **Super Admin Dashboard**: Full system oversight and management.
+- **Organization Management**: Manage organizations and their specific needs.
+- **Survey Conductor Tools**: Dedicated interface for conducting surveys in the field.
 
-Your project is live at:
+### 📝 Survey Management
+- Create, edit, and manage surveys with an intuitive interface.
+- Support for multiple question types and progress tracking.
 
-**[https://vercel.com/ledamob469-2121s-projects/v0-smart-survey-tool-requirements](https://vercel.com/ledamob469-2121s-projects/v0-smart-survey-tool-requirements)**
+### 📍 Location Tracking
+- GPS-enabled data collection to verify survey locations.
+- Offline capability ensures data is captured even without internet access.
 
-## Build your app
+### 📊 Analytics Dashboard
+- Comprehensive data visualization tools using Recharts.
+- Real-time statistics and progress monitoring.
+- Export capabilities for further analysis.
 
-Continue building your app on:
+## 🛠️ Tech Stack
 
-**[https://v0.dev/chat/projects/PdEHIjLRJu0](https://v0.dev/chat/projects/PdEHIjLRJu0)**
+- **Framework**: Next.js 15 (App Router)
+- **Library**: React 19
+- **Styling**: Tailwind CSS, PostCSS, Tailwind Animate
+- **UI Components**: Radix UI, Lucide React (Icons)
+- **Forms & Validation**: React Hook Form, Zod
+- **Charts**: Recharts
+- **Date Handling**: date-fns
+- **Language**: TypeScript
 
-## How It Works
+## 🏁 Getting Started
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+To get started with the project locally, follow these steps:
+
+1.  **Install Dependencies**
+
+    ```bash
+    npm install
+    # or
+    yarn install
+    # or
+    pnpm install
+    # or
+    bun install
+    ```
+
+2.  **Run Development Server**
+
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    # or
+    pnpm dev
+    # or
+    bun dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+3.  **Build for Production**
+
+    ```bash
+    npm run build
+    # or
+    yarn build
+    ```
+
+4.  **Start Production Server**
+
+    ```bash
+    npm run start
+    # or
+    yarn start
+    ```
+
+## 📂 Project Structure
+
+- `app/`: Application routes and pages (App Router).
+  - `conductor/`: Survey Conductor dashboard and tools.
+  - `home/`: Public landing page.
+  - `login/`: Authentication page.
+  - `org-admin/`: Organization Admin dashboard.
+  - `risk-monitoring/`: Risk monitoring features.
+  - `super-admin/`: Super Admin dashboard.
+  - `survey/`: Survey execution pages.
+- `components/`: Reusable UI components.
+- `hooks/`: Custom React hooks (e.g., authentication, theming).
+- `lib/`: Utility functions and helper libraries.
+- `public/`: Static assets.
+- `styles/`: Global styles.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
